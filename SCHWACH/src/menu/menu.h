@@ -11,6 +11,7 @@ public:
     Menu();
 
     void generateMenu();
+    void getActiveMenuItem();
     void printMenu();
     void printMenuItem(int id);
 

@@ -9,11 +9,26 @@ class MenuItem
 public:
     MenuItem();
 
+    // Setters
+    void setId(int id);
+    void setName(String name);
+    void setDescription(String description);
+    void setOptions(std::vector<String> options);
+
+    // Getters
+    void getId();
+    void getName();
+    void getDescription();
+    void getOptions();
+
+    // Methods
+    void printMenuItem();
+
 protected:
     int id;
-    std::string name;
-    std::string description;
-    std::vector<std::string> options;
+    String name;
+    String description;
+    std::vector<String> options;
 };
 
 #endif
