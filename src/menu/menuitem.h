@@ -7,7 +7,7 @@
 class MenuItem
 {
 public:
-    MenuItem();
+    MenuItem(int id, String name, String description, bool isMenu = false);
 
     // Setters
     void setId(int id);
@@ -20,12 +20,14 @@ public:
     void getName();
     void getDescription();
     void getOptions();
+    void getIsMenu();
 
     // Methods
     void printMenuItem();
 
 protected:
     int id;
+    bool isMenu;
     String name;
     String description;
     std::vector<String> options;
