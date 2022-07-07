@@ -20,6 +20,10 @@ public:
     void boot();
 
 private:
+    void clearFirstLine();
+    void clearSecondLine();
+
     LiquidCrystal_I2C lcd;
+    String cleanStr = "                ";
 };
 #endif

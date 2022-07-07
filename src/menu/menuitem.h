@@ -4,10 +4,12 @@
 #include <Arduino.h>
 #include <vector>
 
+#include "../display/lcdDisplay.h"
+
 class MenuItem
 {
 public:
-    MenuItem(int id, String name, String description, bool isMenu = false);
+    MenuItem(int id, String name, String description = "", bool isMenu = false);
 
     // Setters
     void setId(int id);
@@ -16,21 +18,29 @@ public:
     void setOptions(std::vector<String> options);
 
     // Getters
-    void getId();
-    void getName();
-    void getDescription();
+    int getId();
+    String getName();
+    String getDescription();
     void getOptions();
-    void getIsMenu();
 
     // Methods
     void printMenuItem();
+    void printMenu();
+    void generateMenu();
+    bool IsMenu();
+    void increaseSelectedIndex();
+    void decreaseSelectedIndex();
+    void setDisplay(LcdDisplay **newDisplay);
 
 protected:
     int id;
     bool isMenu;
     String name;
     String description;
+    int selectedIndex = 0;
     std::vector<String> options;
+    std::vector<MenuItem *> menuItems;
+    LcdDisplay *lcdDisplay;
 };
 
 #endif

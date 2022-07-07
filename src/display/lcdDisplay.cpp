@@ -33,24 +33,41 @@ void LcdDisplay::boot()
     }
 }
 
+void LcdDisplay::clearFirstLine()
+{
+    lcd.setCursor(0, 0);
+    lcd.print(cleanStr);
+    delay(100);
+}
+
 void LcdDisplay::setFirstLine(String text)
 {
+    clearFirstLine();
     lcd.setCursor(0, 0);
     lcd.print(text);
 }
 void LcdDisplay::setFirstLine(unsigned long text)
 {
+    clearFirstLine();
     lcd.setCursor(0, 0);
     lcd.print(text);
 }
 
+void LcdDisplay::clearSecondLine()
+{
+    lcd.setCursor(0, 1);
+    lcd.print(cleanStr);
+}
+
 void LcdDisplay::setSecondLine(String text)
 {
+    clearSecondLine();
     lcd.setCursor(0, 1);
     lcd.print(text);
 }
 void LcdDisplay::setSecondLine(unsigned long text)
 {
+    clearSecondLine();
     lcd.setCursor(0, 1);
     lcd.print(text);
 }
