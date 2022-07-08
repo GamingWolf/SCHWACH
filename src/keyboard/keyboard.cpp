@@ -1,174 +1,75 @@
-/*
-  Created by Fabrizio Di Vittorio (fdivitto2013@gmail.com) - <http://www.fabgl.com>
-  Copyright (c) 2019-2021 Fabrizio Di Vittorio.
-  All rights reserved.
+#include "keyboard.h"
+#include "../utils/logUtils.h"
 
-
-* Please contact fdivitto2013@gmail.com if you need a commercial license.
-
-
-* This library and related software is available under GPL v3. Feel free to use FabGL in free software and hardware:
-
-  FabGL is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  FabGL is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with FabGL.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-#include <SPI.h>
-#include <WiFiGeneric.h>
-#include <fabgl.h>
-
-fabgl::VGATextController DisplayController;
-fabgl::Terminal Terminal;
-fabgl::PS2Controller PS2Controller;
-fabgl::Keyboard keyboard;
-
-void xprintf(const char *format, ...)
+Keyboard::Keyboard()
 {
-    va_list ap;
-    va_start(ap, format);
-    int size = vsnprintf(nullptr, 0, format, ap) + 1;
-    if (size > 0)
-    {
-        va_end(ap);
-        va_start(ap, format);
-        char buf[size + 1];
-        vsnprintf(buf, size, format, ap);
-        Serial.write(buf);
-        Terminal.write(buf);
-    }
-    va_end(ap);
 }
 
-void printInfo()
+void Keyboard::init()
 {
-    // auto keyboard = PS2Controller.keyboard();
+    // Enable the PS2 Controller on PIN 33 for CLK and PIN 32 for DAT
+    PS2Controller.begin(GPIO_NUM_33, GPIO_NUM_32);
+
+    // initialize keyboard on port 0 (PIN33=CLK, PIN32=DAT)
+    keyboard.begin(true, true, 0);
+    keyboard.setLayout(&fabgl::GermanLayout);
+
+    identify();
+}
+
+void Keyboard::identify()
+{
     if (keyboard.isKeyboardAvailable())
     {
-        xprintf("Device Id = ");
         switch (keyboard.identify())
         {
         case PS2DeviceType::OldATKeyboard:
-            xprintf("\"Old AT Keyboard\"");
+            LogUtils::xprintf("\"Old AT Keyboard\"");
             break;
         case PS2DeviceType::MouseStandard:
-            xprintf("\"Standard Mouse\"");
+            LogUtils::xprintf("\"Standard Mouse\"");
             break;
         case PS2DeviceType::MouseWithScrollWheel:
-            xprintf("\"Mouse with scroll wheel\"");
+            LogUtils::xprintf("\"Mouse with scroll wheel\"");
             break;
         case PS2DeviceType::Mouse5Buttons:
-            xprintf("\"5 Buttons Mouse\"");
+            LogUtils::xprintf("\"5 Buttons Mouse\"");
             break;
         case PS2DeviceType::MF2KeyboardWithTranslation:
-            xprintf("\"MF2 Keyboard with translation\"");
+            LogUtils::xprintf("\"MF2 Keyboard with translation\"");
             break;
         case PS2DeviceType::M2Keyboard:
-            xprintf("\"MF2 keyboard\"");
+            LogUtils::xprintf("\"MF2 keyboard\"");
             break;
         default:
-            xprintf("\"Unknown\"");
+            LogUtils::xprintf("\"Unknown\"");
             break;
         }
-        xprintf("\r\n", keyboard.getLayout()->name);
+        LogUtils::xprintf("\r\n", keyboard.getLayout()->name);
+        LogUtils::xprintf("Keyboard Layout: \"%s\"\r\n", keyboard.getLayout()->name);
     }
     else
-        xprintf("Keyboard Error!\r\n");
+        LogUtils::xprintf("Keyboard Error!\r\n");
 }
 
-void printHelp()
+void Keyboard::read()
 {
-    xprintf("\e[93m\n\nPS/2 Keyboard Scancodes\r\n");
-    xprintf("Chip Revision: %d   Chip Frequency: %d MHz\r\n", ESP.getChipRevision(), ESP.getCpuFreqMHz());
-
-    printInfo();
-
-    xprintf("Commands:\r\n");
-    xprintf("  q = Scancode set 1  w = Scancode set 2\r\n");
-    xprintf("  l = Test LEDs       r = Reset keyboard\r\n");
-    xprintf("Various:\r\n");
-    xprintf("  h = Print This help\r\n\n");
-    xprintf("Use Serial Monitor to issue commands\r\n\n");
-}
-
-void setup()
-{
-    Serial.begin(115200);
-    delay(500); // avoid garbage into the UART
-    Serial.write("\r\n\nReset\r\n");
-
-    DisplayController.begin();
-    DisplayController.setResolution();
-
-    Terminal.begin(&DisplayController);
-    Terminal.enableCursor(true);
-
-    // PS2Controller.begin(PS2Preset::KeyboardPort0, KbdMode::NoVirtualKeys);
-    PS2Controller.begin(GPIO_NUM_33, GPIO_NUM_32);
-    // initialize keyboard on port 0 (GPI33=CLK, GPI32=DAT)
-    keyboard.begin(false, false, 0);
-
-    printHelp();
-}
-
-void loop()
-{
-    static int clen = 1;
-    // auto keyboard = PS2Controller.keyboard();
-
-    if (Serial.available() > 0)
+    if (keyboard.virtualKeyAvailable())
     {
-        char c = Serial.read();
-        switch (c)
+        // ascii mode (show ASCIIl, VirtualKeys and scancodes)
+        VirtualKeyItem item;
+        if (keyboard.getNextVirtualKey(&item))
         {
-        case 'h':
-            printHelp();
-            break;
-        case 'r':
-            keyboard.reset();
-            printInfo();
-            break;
-        case 'l':
-            for (int i = 0; i < 8; ++i)
-            {
-                keyboard.setLEDs(i & 1, i & 2, i & 4);
-                delay(1000);
-            }
-            delay(2000);
-            if (keyboard.setLEDs(0, 0, 0))
-                xprintf("OK\r\n");
-            break;
-        case 'q':
-            keyboard.setScancodeSet(1);
-            xprintf("Scancode Set = %d\r\n", keyboard.scancodeSet());
-            break;
-        case 'w':
-            keyboard.setScancodeSet(2);
-            xprintf("Scancode Set = %d\r\n", keyboard.scancodeSet());
-            break;
-        }
-    }
-
-    if (keyboard.scancodeAvailable())
-    {
-        int scode = keyboard.getNextScancode();
-        xprintf("%02X ", scode);
-        if (scode == 0xF0 || scode == 0xE0)
-            ++clen;
-        --clen;
-        if (clen == 0)
-        {
-            clen = 1;
-            xprintf("\r\n");
+            LogUtils::xprintf("%s: ", keyboard.virtualKeyToString(item.vk));
+            LogUtils::xprintf("\tASCII = 0x%02X\t", item.ASCII);
+            if (item.ASCII >= ' ')
+                LogUtils::xprintf("'%c'", item.ASCII);
+            LogUtils::xprintf("\t%s", item.down ? "DN" : "UP");
+            LogUtils::xprintf("\t[");
+            for (int i = 0; i < 8 && item.scancode[i] != 0; ++i)
+                LogUtils::xprintf("%02X ", item.scancode[i]);
+            LogUtils::xprintf("]");
+            LogUtils::xprintf("\r\n");
         }
     }
 }

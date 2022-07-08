@@ -1,4 +1,5 @@
 #include "terminal.h"
+#include "../utils/logUtils.h"
 
 Terminal::Terminal()
 {
@@ -7,8 +8,8 @@ Terminal::Terminal()
 void Terminal::init(Menu newMenu)
 {
     menu = newMenu;
-    Serial.begin(115200);
-    Serial.write("\r\nInitialised\r\n");
+
+    LogUtils::xprintf("\r\nInitialised\r\n");
 }
 
 void Terminal::read()
@@ -19,10 +20,10 @@ void Terminal::read()
         switch (c)
         {
         case 'w':
-            Serial.println("Up");
+            LogUtils::xprintf("Up");
             break;
         case 'd':
-            Serial.println("Right");
+            LogUtils::xprintf("Right");
             if (menu.isInSubMenu())
             {
                 MenuItem *activeMenuItem = menu.getActiveMenuItem();
@@ -36,10 +37,10 @@ void Terminal::read()
             }
             break;
         case 's':
-            Serial.println("Down");
+            LogUtils::xprintf("Down");
             break;
         case 'a':
-            Serial.println("Left");
+            LogUtils::xprintf("Left");
             if (menu.isInSubMenu())
             {
                 MenuItem *activeMenuItem = menu.getActiveMenuItem();
@@ -53,15 +54,15 @@ void Terminal::read()
             }
             break;
         case 'h':
-            Serial.println("Home");
+            LogUtils::xprintf("Home");
             menu.printMenu();
             break;
         case ' ':
-            Serial.println("Select");
+            LogUtils::xprintf("Select");
             menu.printMenuItem(menu.getSelectedIndex());
             break;
         default:
-            Serial.println(c);
+            LogUtils::xprintf(&c);
             break;
         }
     }
