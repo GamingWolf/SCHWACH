@@ -3,6 +3,8 @@
 
 #include <fabgl.h>
 
+#include "../menu/menu.h"
+
 class Keyboard
 {
 public:
@@ -10,6 +12,7 @@ public:
 
     void printInfo();
     void init();
+    void setMenu(Menu *newMenu);
     void read();
 
 private:
@@ -17,6 +20,7 @@ private:
 
     fabgl::PS2Controller PS2Controller;
     fabgl::Keyboard keyboard;
+    Menu *menu;
 };
 
 #endif

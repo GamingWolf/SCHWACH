@@ -10,26 +10,34 @@
 class Menu
 {
 public:
-    Menu();
+    Menu(int intId = 0, String strName = "", String strDescription = "");
 
     void init(LcdDisplay **newDisplay);
 
     void generateMenu();
     void printMenu();
-    void printMenuItem(int id);
-    bool isInSubMenu();
-
+    void printDescription();
+    void printName();
     void increaseSelectedIndex();
     void decreaseSelectedIndex();
 
     // getters
-    MenuItem *getActiveMenuItem();
+    Menu getMenu();
     int getSelectedIndex();
+    int getId();
+    String getName();
+    String getDescription();
+
+    // deprecated
+    void printMenuItem(int id);
 
 protected:
+    int id;
+    String name;
+    String description;
     int selectedIndex = 0;
-    bool inSubMenu = false;
-    std::vector<MenuItem *> menuItems;
+    std::vector<int> menuTracker;
+    std::vector<Menu *> subMenus;
     LcdDisplay *lcdDisplay;
 };
 

@@ -17,6 +17,12 @@ void Keyboard::init()
     identify();
 }
 
+void Keyboard::setMenu(Menu *newMenu)
+{
+    ESP_LOGI(LOG_TAG, "Setting menu to %p", newMenu);
+    menu = newMenu;
+}
+
 void Keyboard::identify()
 {
     if (keyboard.isKeyboardAvailable())
@@ -58,6 +64,43 @@ void Keyboard::read()
     {
         // ascii mode (show ASCIIl, VirtualKeys and scancodes)
         VirtualKeyItem item;
+        keyboard.getNextVirtualKey(&item);
+        switch (item.vk)
+        {
+        case fabgl::VK_ESCAPE:
+        case fabgl::VK_h:
+        case fabgl::VK_H:
+            break;
+        case fabgl::VK_b:
+        case fabgl::VK_B:
+            menu->printMenu();
+            break;
+        case fabgl::VK_d:
+        case fabgl::VK_D:
+        case fabgl::VK_RIGHT:
+            menu->increaseSelectedIndex();
+            menu->printMenu();
+            break;
+        case fabgl::VK_a:
+        case fabgl::VK_A:
+        case fabgl::VK_LEFT:
+            menu->decreaseSelectedIndex();
+            menu->printMenu();
+            break;
+        case fabgl::VK_s:
+        case fabgl::VK_S:
+        case fabgl::VK_DOWN:
+            break;
+        case fabgl::VK_w:
+        case fabgl::VK_W:
+        case fabgl::VK_UP:
+            break;
+        case fabgl::VK_SPACE:
+        case fabgl::VK_RETURN:
+            break;
+        default:
+            break;
+        }
         if (keyboard.getNextVirtualKey(&item))
         {
             LogUtils::xprintf("%s: ", keyboard.virtualKeyToString(item.vk));

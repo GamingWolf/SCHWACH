@@ -1,7 +1,10 @@
 #include "menu.h"
 
-Menu::Menu()
+Menu::Menu(int intId, String strName, String strDescription)
 {
+    id = intId;
+    name = strName;
+    description = strDescription;
 }
 
 void Menu::init(LcdDisplay **newDisplay)
@@ -9,32 +12,42 @@ void Menu::init(LcdDisplay **newDisplay)
     lcdDisplay = *newDisplay;
 }
 
+Menu Menu::getMenu()
+{
+    return *this;
+}
+
 int Menu::getSelectedIndex()
 {
     return selectedIndex;
 }
 
-bool Menu::isInSubMenu()
+int Menu::getId()
 {
-    return inSubMenu;
+    return id;
 }
 
-MenuItem *Menu::getActiveMenuItem()
+String Menu::getName()
 {
-    return menuItems[selectedIndex];
+    return name;
+}
+
+String Menu::getDescription()
+{
+    return description;
 }
 
 void Menu::generateMenu()
 {
-    menuItems.push_back(new MenuItem(0, "Devices", "List of Devices", true));
-    menuItems.push_back(new MenuItem(1, "Settings"));
-    menuItems.push_back(new MenuItem(2, "About"));
-    menuItems.push_back(new MenuItem(3, "Console"));
+    subMenus.push_back(new Menu(0, "Devices", "List of Devices"));
+    subMenus.push_back(new Menu(1, "Settings"));
+    subMenus.push_back(new Menu(2, "About"));
+    subMenus.push_back(new Menu(3, "Console"));
 }
 
 void Menu::increaseSelectedIndex()
 {
-    if (selectedIndex < menuItems.size() - 1)
+    if (selectedIndex < subMenus.size() - 1)
     {
         selectedIndex++;
     }
@@ -52,7 +65,7 @@ void Menu::printMenu()
 {
     Serial.println("Printing menu");
     String firstMenuLine, secondMenuLine = "";
-    for (int i = 0; i < menuItems.size(); i++)
+    for (int i = 0; i < subMenus.size(); i++)
     {
         if (firstMenuLine.length() >= 16 && i <= selectedIndex)
         {
@@ -66,14 +79,14 @@ void Menu::printMenu()
         if (i == selectedIndex)
         {
             firstMenuLine += ">";
-            secondMenuLine += menuItems[i]->getDescription();
+            secondMenuLine += subMenus[i]->getDescription();
         }
         else
         {
             firstMenuLine += "";
         }
 
-        firstMenuLine += menuItems[i]->getName();
+        firstMenuLine += subMenus[i]->getName();
         firstMenuLine += " ";
     }
 
@@ -81,20 +94,12 @@ void Menu::printMenu()
     lcdDisplay->setSecondLine(secondMenuLine);
 }
 
-void Menu::printMenuItem(int id)
+void Menu::printDescription()
 {
-    Serial.println("Printing menu item");
-    MenuItem *menuItem = menuItems[id];
-    if (menuItem->IsMenu())
-    {
-        inSubMenu = true;
-        menuItem->setDisplay(&lcdDisplay);
-        menuItem->generateMenu();
-        menuItem->printMenu();
-    }
-    else
-    {
-        lcdDisplay->setFirstLine(menuItem->getName());
-        lcdDisplay->setSecondLine(menuItem->getDescription());
-    }
+    lcdDisplay->setSecondLine(subMenus[selectedIndex]->getDescription());
+}
+
+void Menu::printName()
+{
+    lcdDisplay->setFirstLine(subMenus[selectedIndex]->getName());
 }

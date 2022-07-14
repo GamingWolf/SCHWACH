@@ -10,13 +10,14 @@ class Terminal
 public:
     Terminal();
 
-    void init(Menu newMenu);
+    void init();
+    void setMenu(Menu *newMenu);
     void read();
 
 protected:
     fabgl::VGATextController displayController;
     fabgl::Terminal terminal;
-    Menu menu;
+    Menu *menu;
 };
 
 #endif

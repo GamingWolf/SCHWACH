@@ -1,15 +1,19 @@
 #include "terminal.h"
 #include "../utils/logUtils.h"
+#include "../menu/menu.h"
 
 Terminal::Terminal()
 {
 }
 
-void Terminal::init(Menu newMenu)
+void Terminal::init()
+{
+    LogUtils::xprintf("\r\nInitialised\r\n");
+}
+
+void Terminal::setMenu(Menu *newMenu)
 {
     menu = newMenu;
-
-    LogUtils::xprintf("\r\nInitialised\r\n");
 }
 
 void Terminal::read()
@@ -24,42 +28,25 @@ void Terminal::read()
             break;
         case 'd':
             LogUtils::xprintf("Right");
-            if (menu.isInSubMenu())
-            {
-                MenuItem *activeMenuItem = menu.getActiveMenuItem();
-                activeMenuItem->increaseSelectedIndex();
-                activeMenuItem->printMenu();
-            }
-            else
-            {
-                menu.increaseSelectedIndex();
-                menu.printMenu();
-            }
+            menu->increaseSelectedIndex();
+            menu->printMenu();
             break;
         case 's':
             LogUtils::xprintf("Down");
             break;
         case 'a':
             LogUtils::xprintf("Left");
-            if (menu.isInSubMenu())
-            {
-                MenuItem *activeMenuItem = menu.getActiveMenuItem();
-                activeMenuItem->decreaseSelectedIndex();
-                activeMenuItem->printMenu();
-            }
-            else
-            {
-                menu.decreaseSelectedIndex();
-                menu.printMenu();
-            }
+            menu->decreaseSelectedIndex();
+            menu->printMenu();
             break;
+        case 'b':
         case 'h':
             LogUtils::xprintf("Home");
-            menu.printMenu();
+            menu->printMenu();
             break;
         case ' ':
             LogUtils::xprintf("Select");
-            menu.printMenuItem(menu.getSelectedIndex());
+            // menu.printMenuItem(menu.getSelectedIndex());
             break;
         default:
             LogUtils::xprintf(&c);
