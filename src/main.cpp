@@ -7,13 +7,11 @@
 
 #include "menu/menu.h"
 #include "display/lcdDisplay.h"
-#include "keyboard/terminal.h"
-#include "keyboard/keyboard.h"
+#include "input/input.h"
 
 LcdDisplay *lcdDisplay;
 Menu mainMenu;
-Terminal terminal;
-Keyboard keyboard;
+Input input;
 
 int wifiUpdateInterval = 20000;
 bool disconnected = false;
@@ -89,17 +87,10 @@ void setup()
   mainMenu.init(&lcdDisplay);
   mainMenu.generateMenu();
 
-  terminal.init();
-  terminal.setMenu(&mainMenu);
-
-  // White == Data == PIN 32
-  // Green == Clock == PIN 33
-  // Red == 5V
-  // Yellow == GND
-  keyboard.init();
-  keyboard.setMenu(&mainMenu);
-
   setupWifi();
+
+  input.init();
+  input.setMenu(&mainMenu);
 
   mainMenu.printMenu();
 }
@@ -118,6 +109,5 @@ void loop()
   }
 
   // Read keyboard inputs
-  keyboard.read();
-  terminal.read();
+  input.read();
 }
