@@ -9,14 +9,11 @@
 #include "display/lcdDisplay.h"
 #include "input/input.h"
 #include "mqtt/mqttClientWrapper.h"
-#include "menu/device.h"
 
 LcdDisplay *lcdDisplay;
 Menu mainMenu;
 Input input;
 MQTTClientWrapper mqttClientWrapper;
-
-std::vector<Device> devices;
 
 int wifiUpdateInterval = 20000;
 bool disconnected = false;

@@ -3,8 +3,6 @@
 #include <vector>
 
 #include "mqttClientWrapper.h"
-#include "../menu/device.h"
-#include "../menu/deviceOption.h"
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);

@@ -23,11 +23,6 @@ void Keyboard::setMenu(Menu *newMenu)
     menu = newMenu;
 }
 
-void Keyboard::setDevice(Device *newDevice)
-{
-    device = newDevice;
-}
-
 void Keyboard::identify()
 {
     if (keyboard.isKeyboardAvailable())
