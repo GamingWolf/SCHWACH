@@ -23,6 +23,11 @@ void Keyboard::setMenu(Menu *newMenu)
     menu = newMenu;
 }
 
+void Keyboard::setDevice(Device *newDevice)
+{
+    device = newDevice;
+}
+
 void Keyboard::identify()
 {
     if (keyboard.isKeyboardAvailable())
@@ -70,10 +75,11 @@ void Keyboard::read()
         case fabgl::VK_ESCAPE:
         case fabgl::VK_h:
         case fabgl::VK_H:
+            menu->printMenu();
             break;
         case fabgl::VK_b:
         case fabgl::VK_B:
-            menu->printMenu();
+
             break;
         case fabgl::VK_d:
         case fabgl::VK_D:

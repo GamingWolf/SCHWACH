@@ -24,6 +24,12 @@ void Input::setMenu(Menu *newMenu)
     keyboard.setMenu(newMenu);
 }
 
+void Input::setDevice(Device *newDevice)
+{
+    terminal.setDevice(newDevice);
+    keyboard.setDevice(newDevice);
+}
+
 void Input::read()
 {
     terminal.read();

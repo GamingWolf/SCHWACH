@@ -4,6 +4,7 @@
 #include <fabgl.h>
 
 #include "../menu/menu.h"
+#include "../menu/device.h"
 
 class Keyboard
 {
@@ -13,6 +14,7 @@ public:
     void printInfo();
     void init();
     void setMenu(Menu *newMenu);
+    void setDevice(Device *newDevice);
     void read();
 
 private:
@@ -21,6 +23,7 @@ private:
     fabgl::PS2Controller PS2Controller;
     fabgl::Keyboard keyboard;
     Menu *menu;
+    Device *device;
 };
 
 #endif

@@ -93,13 +93,3 @@ void Menu::printMenu()
     lcdDisplay->setFirstLine(firstMenuLine);
     lcdDisplay->setSecondLine(secondMenuLine);
 }
-
-void Menu::printDescription()
-{
-    lcdDisplay->setSecondLine(subMenus[selectedIndex]->getDescription());
-}
-
-void Menu::printName()
-{
-    lcdDisplay->setFirstLine(subMenus[selectedIndex]->getName());
-}

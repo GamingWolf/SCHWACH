@@ -8,10 +8,15 @@
 #include "menu/menu.h"
 #include "display/lcdDisplay.h"
 #include "input/input.h"
+#include "mqtt/mqttClientWrapper.h"
+#include "menu/device.h"
 
 LcdDisplay *lcdDisplay;
 Menu mainMenu;
 Input input;
+MQTTClientWrapper mqttClientWrapper;
+
+std::vector<Device> devices;
 
 int wifiUpdateInterval = 20000;
 bool disconnected = false;
@@ -73,6 +78,17 @@ void setupWifi()
   Serial.println(WiFi.localIP());
 }
 
+void setupMQTT()
+{
+  mqttClientWrapper.init();
+  mqttClientWrapper.reconnect();
+
+  lcdDisplay->setFirstLine("MQTT connected");
+
+  mqttClientWrapper.publishSerialData((char *)"SCHWACH connected");
+  mqttClientWrapper.subscribe((char *)"manifest/#");
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -88,6 +104,8 @@ void setup()
   mainMenu.generateMenu();
 
   setupWifi();
+
+  setupMQTT();
 
   input.init();
   input.setMenu(&mainMenu);
@@ -110,4 +128,6 @@ void loop()
 
   // Read keyboard inputs
   input.read();
+
+  mqttClientWrapper.loop();
 }

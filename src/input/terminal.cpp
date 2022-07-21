@@ -16,6 +16,11 @@ void Terminal::setMenu(Menu *newMenu)
     menu = newMenu;
 }
 
+void Terminal::setDevice(Device *newDevice)
+{
+    device = newDevice;
+}
+
 void Terminal::read()
 {
     if (Serial.available() > 0)
@@ -33,6 +38,7 @@ void Terminal::read()
             break;
         case 's':
             LogUtils::xprintf("Down");
+            device->showOptions();
             break;
         case 'a':
             LogUtils::xprintf("Left");
