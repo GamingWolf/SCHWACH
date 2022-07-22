@@ -18,8 +18,8 @@ MQTTClientWrapper mqttClientWrapper;
 int wifiUpdateInterval = 20000;
 bool disconnected = false;
 
-char ssid[] = "masterplan";
-const char *password = "J4rv1s2013W1ls0n2017";
+char ssid[] = "Potato";
+const char *password = "@turtew66EV%";
 
 void checkWifi()
 {
@@ -77,7 +77,7 @@ void setupWifi()
 
 void setupMQTT()
 {
-  mqttClientWrapper.init();
+  mqttClientWrapper.init(&devices);
   mqttClientWrapper.reconnect();
 
   lcdDisplay->setFirstLine("MQTT connected");
