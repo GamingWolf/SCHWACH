@@ -5,12 +5,14 @@
 #include <WiFiSTA.h>
 #include <PubSubClient.h>
 
+#include "../menu/device.h"
+
 class MQTTClientWrapper
 {
 public:
     MQTTClientWrapper();
 
-    void init();
+    void init(std::vector<Device> *devices);
     void reconnect();
     void publishSerialData(char *serialData);
     void loop();
@@ -21,6 +23,7 @@ protected:
     char *mqttServer = (char *)"mqtt.castrumnubis.com";
     int mqttPort = 1883;
     char *publishChannel = (char *)"SCHWACH/log";
+    std::vector<Device> *devices;
 };
 
 #endif

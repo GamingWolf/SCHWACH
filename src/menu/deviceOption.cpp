@@ -17,7 +17,7 @@ const char *DeviceOption::getType()
     return type;
 }
 
-JsonArray *DeviceOption::getOptions()
+std::vector<String> DeviceOption::getOptions()
 {
     return options;
 }

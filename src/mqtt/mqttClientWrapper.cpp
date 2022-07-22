@@ -15,10 +15,12 @@ MQTTClientWrapper::MQTTClientWrapper()
 {
 }
 
-void MQTTClientWrapper::init()
+void MQTTClientWrapper::init(std::vector<Device> *devices)
 {
     client.setServer(mqttServer, mqttPort);
     client.setCallback(callback);
+
+    this->devices = devices;
 }
 
 void MQTTClientWrapper::reconnect()
@@ -55,45 +57,53 @@ void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length
     Serial.print("channel:");
     Serial.println(topic);
     Serial.print("data:");
+    Serial.write(payload, length);
 
     String topicStr = String(topic);
-
     if (topicStr.startsWith("manifest/"))
     {
         // as byte and char have the same length, we can just
         // lie to the compiler and use char
-        // payload[length] = '\0';
-        // String s = String((char *)payload);
+        payload[length] = '\0';
+        String s = String((char *)payload);
 
-        // DeserializationError error = deserializeJson(jsonDoc, s);
-        // if (error)
-        // {
-        //     Serial.println("deserializeJson() failed");
-        //     Serial.println(error.c_str());
-        //     return;
-        // }
+        DeserializationError error = deserializeJson(jsonDoc, s);
+        if (error)
+        {
+            Serial.println("deserializeJson() failed");
+            Serial.println(error.c_str());
+            return;
+        }
 
         // remove the first 8 characters from the string
         // This leaves just the name of the device
-        // topicStr.remove(0, 9);
-        // std::vector<DeviceOption> deviceOptions;
-        // for (size_t i = 0; i < jsonDoc.size(); i++)
-        // {
+        topicStr.remove(0, 9);
+        std::vector<DeviceOption> deviceOptions;
+        for (size_t i = 0; i < jsonDoc.size(); i++)
+        {
 
-        //     const char name = jsonDoc[i]["name"];
-        //     const char type = jsonDoc[i]["type"];
-        //     auto jsonOptions = jsonDoc[i]["options"].as<JsonArray>();
-        //     std::vector<String> options;
-        //     for (int i = 0; i < jsonOptions.size(); i++)
-        //     {
-        //         options.push_back(String((char *)jsonOptions[i]));
-        //     }
+            const char name = jsonDoc[i]["name"].as<char>();
+            Serial.println(name);
+            const char type = jsonDoc[i]["type"].as<char>();
+            Serial.println(type);
+            auto jsonOptions = jsonDoc[i]["options"];
+            std::vector<String> options;
+            for (int i = 0; i < jsonOptions.size(); i++)
+            {
+                String newOption = jsonOptions[i].as<String>();
+                Serial.println(newOption);
+                options.push_back(newOption);
+            }
 
-        //     DeviceOption *option = new DeviceOption(name, type, options);
-        //     deviceOptions.push_back(*option);
-        // }
-        // Serial.println(topicStr);
-        // Device *device = new Device(topicStr, deviceOptions);
+            DeviceOption *option = new DeviceOption(&name, &type, options);
+            deviceOptions.push_back(*option);
+        }
+        Serial.print("Device: ");
+        Serial.println(topicStr);
+        Device *device = new Device(topicStr, deviceOptions);
+
+        Serial.println("Device options:");
+        device->showOptions();
     }
 }
 

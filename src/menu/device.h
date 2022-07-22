@@ -10,6 +10,7 @@ class Device
 public:
     Device(String name, std::vector<DeviceOption> options);
     void showOptions();
+    String getName();
 
 private:
     std::vector<DeviceOption> deviceOptions;

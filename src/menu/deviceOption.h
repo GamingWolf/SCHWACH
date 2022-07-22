@@ -8,9 +8,9 @@ class DeviceOption
 {
 public:
     DeviceOption(const char *newName, const char *newType, std::vector<String> newOptions);
-    char getName();
-    char getType();
-    JsonArray getOptions();
+    const char *getName();
+    const char *getType();
+    std::vector<String> getOptions();
 
 private:
     const char *name;
