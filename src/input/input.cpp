@@ -1,5 +1,7 @@
 #include "input.h"
 
+#include "../menu/device.h"
+
 Terminal terminal;
 Keyboard keyboard;
 
@@ -7,15 +9,15 @@ Input::Input()
 {
 }
 
-void Input::init()
+void Input::init(std::vector<Device> *devices, MQTTClientWrapper *mqttClientWrapper)
 {
-    terminal.init();
+    terminal.init(devices, mqttClientWrapper);
 
     // White == Data == PIN 32
     // Green == Clock == PIN 33
     // Red == 5V
     // Yellow == GND
-    keyboard.init();
+    keyboard.init(devices);
 }
 
 void Input::setMenu(Menu *newMenu)

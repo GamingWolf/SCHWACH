@@ -19,6 +19,7 @@ void LogUtils::xprintf(const char *message, ...)
         char buf[size + 1];
         vsnprintf(buf, size, message, ap);
         Serial.write(buf);
+        Serial.write("\n");
     }
     va_end(ap);
 }

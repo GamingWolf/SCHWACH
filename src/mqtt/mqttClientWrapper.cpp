@@ -13,12 +13,13 @@ MQTTClientWrapper::MQTTClientWrapper()
 {
 }
 
-void MQTTClientWrapper::init(std::vector<Device> *devices)
+void MQTTClientWrapper::init(std::vector<Device> *newDevices)
 {
+    devices = newDevices;
     client.setServer(mqttServer, mqttPort);
-    client.setCallback(callback);
-
-    this->devices = devices;
+    // client.setCallback(callback);
+    client.setCallback([this](char *topic, byte *payload, unsigned int length)
+                       { this->callback(topic, payload, length); });
 }
 
 void MQTTClientWrapper::reconnect()
@@ -51,14 +52,14 @@ void MQTTClientWrapper::reconnect()
 void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length)
 {
 
-    Serial.println("-------new message from broker-----");
-    Serial.print("channel:");
-    Serial.println(topic);
-    Serial.print("data:");
-    Serial.write(payload, length);
+    // Serial.println("-------new message from broker-----");
+    // Serial.print("channel:");
+    // Serial.println(topic);
+    // Serial.print("data:");
+    // Serial.write(payload, length);
 
     String topicStr = String(topic);
-    if (topicStr.startsWith("manifest/"))
+    if (topicStr.startsWith("manifest/") && !topicStr.equals("manifest/broadcast"))
     {
         // as byte and char have the same length, we can just
         // lie to the compiler and use char
@@ -80,42 +81,40 @@ void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length
         for (size_t i = 0; i < jsonDoc.size(); i++)
         {
 
-            const char name = jsonDoc[i]["name"].as<char>();
-            Serial.println(name);
-            const char type = jsonDoc[i]["type"].as<char>();
-            Serial.println(type);
+            String name = jsonDoc[i]["name"].as<String>();
+            String type = jsonDoc[i]["type"].as<String>();
+
             auto jsonOptions = jsonDoc[i]["options"];
             std::vector<String> options;
             for (int i = 0; i < jsonOptions.size(); i++)
             {
                 String newOption = jsonOptions[i].as<String>();
-                Serial.println(newOption);
                 options.push_back(newOption);
             }
 
-            DeviceOption *option = new DeviceOption(&name, &type, options);
-            deviceOptions.push_back(*option);
+            DeviceOption option = DeviceOption(name, type, options);
+            deviceOptions.push_back(option);
         }
-        Serial.print("Device: ");
-        Serial.println(topicStr);
-        Device *device = new Device(topicStr, deviceOptions);
-
-        Serial.println("Device options:");
-        device->showOptions();
+        Device device = Device(topicStr, deviceOptions);
+        devices->push_back(device);
     }
 }
 
-void MQTTClientWrapper::publishSerialData(char *serialData)
+void MQTTClientWrapper::publishSerialData(char *channel, char *serialData)
 {
     if (!client.connected())
     {
         reconnect();
     }
-    client.publish(publishChannel, serialData);
+    client.publish(channel, serialData);
 }
 
 void MQTTClientWrapper::subscribe(char *channel)
 {
+    if (!client.connected())
+    {
+        reconnect();
+    }
     client.subscribe(channel);
 }
 

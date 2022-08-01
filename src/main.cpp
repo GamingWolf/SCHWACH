@@ -14,12 +14,13 @@ LcdDisplay *lcdDisplay;
 Menu mainMenu;
 Input input;
 MQTTClientWrapper mqttClientWrapper;
+std::vector<Device> devices;
 
 int wifiUpdateInterval = 20000;
 bool disconnected = false;
 
-char ssid[] = "Potato";
-const char *password = "@turtew66EV%";
+char ssid[] = "masterplan";
+const char *password = "J4rv1s2013W1ls0n2017";
 
 void checkWifi()
 {
@@ -48,6 +49,7 @@ void setupWifi()
   Serial.print("Connecting to ");
   Serial.println(ssid);
   lcdDisplay->setFirstLine("Connecting to WiFi");
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   int count = 1;
   String dots = ".";
@@ -82,15 +84,14 @@ void setupMQTT()
 
   lcdDisplay->setFirstLine("MQTT connected");
 
-  mqttClientWrapper.publishSerialData((char *)"SCHWACH connected");
+  mqttClientWrapper.publishSerialData((char *)"SCHWACH/log", (char *)"SCHWACH connected");
   mqttClientWrapper.subscribe((char *)"manifest/#");
+  mqttClientWrapper.publishSerialData((char *)"manifest/broadcast", (char *)"");
 }
 
 void setup()
 {
   Serial.begin(115200);
-  WiFi.mode(WIFI_STA);
-  WiFi.begin("masterplan", "J4rv1s2013W1ls0n2017");
   Serial.println("Connecting to WiFi...");
 
   lcdDisplay = new LcdDisplay();
@@ -104,7 +105,7 @@ void setup()
 
   setupMQTT();
 
-  input.init();
+  input.init(&devices, &mqttClientWrapper);
   input.setMenu(&mainMenu);
 
   mainMenu.printMenu();

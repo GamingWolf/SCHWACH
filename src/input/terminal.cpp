@@ -6,9 +6,11 @@ Terminal::Terminal()
 {
 }
 
-void Terminal::init()
+void Terminal::init(std::vector<Device> *newDevices, MQTTClientWrapper *newMqttClientWrapper)
 {
     LogUtils::xprintf("\r\nInitialised\r\n");
+    devices = newDevices;
+    mqttClientWrapper = newMqttClientWrapper;
 }
 
 void Terminal::setMenu(Menu *newMenu)
@@ -33,6 +35,8 @@ void Terminal::read()
             break;
         case 's':
             LogUtils::xprintf("Down");
+            LogUtils::xprintf("%d", devices->at(0).getName());
+            devices->at(0).showOptions();
             break;
         case 'a':
             LogUtils::xprintf("Left");

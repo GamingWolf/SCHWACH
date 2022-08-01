@@ -7,14 +7,14 @@
 class DeviceOption
 {
 public:
-    DeviceOption(const char *newName, const char *newType, std::vector<String> newOptions);
-    const char *getName();
-    const char *getType();
+    DeviceOption(String newName, String newType, std::vector<String> newOptions);
+    String getName();
+    String getType();
     std::vector<String> getOptions();
 
 private:
-    const char *name;
-    const char *type;
+    String name;
+    String type;
     std::vector<String> options;
 };
 #endif

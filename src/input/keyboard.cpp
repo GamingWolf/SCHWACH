@@ -5,7 +5,7 @@ Keyboard::Keyboard()
 {
 }
 
-void Keyboard::init()
+void Keyboard::init(std::vector<Device> *newDevices)
 {
     // Enable the PS2 Controller on PIN 33 for CLK and PIN 32 for DAT
     PS2Controller.begin(GPIO_NUM_33, GPIO_NUM_32);
@@ -15,6 +15,8 @@ void Keyboard::init()
     keyboard.setLayout(&fabgl::GermanLayout);
 
     identify();
+
+    devices = newDevices;
 }
 
 void Keyboard::setMenu(Menu *newMenu)

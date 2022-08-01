@@ -14,22 +14,26 @@ String Device::getName()
 
 void Device::showOptions()
 {
-    Serial.println("-------new message from broker-----");
-    Serial.print("Device Name:");
+    LogUtils::xprintf("Device Name:");
     LogUtils::xprintf(deviceName.c_str());
-    Serial.print("Options:");
+    LogUtils::xprintf("Options:");
 
     for (auto option : deviceOptions)
     {
-        // Serial.print("Option Name:");
-        // Serial.println(option.getName());
-        // Serial.print("Option Type:");
-        // Serial.println(option.getType());
-        for (auto option : option.getOptions())
+        LogUtils::xprintf("Option Name: %s", option.getName().c_str());
+        LogUtils::xprintf("Option Type: %s", option.getType().c_str());
+        LogUtils::xprintf("Showing Options:");
+        auto options = option.getOptions();
+        if (options.size() > 0)
         {
-            Serial.println("Showing Options:");
-            Serial.print(option);
+            for (auto option : options)
+            {
+                Serial.println(option);
+            }
         }
-        Serial.println();
+        else
+        {
+            LogUtils::xprintf("No options");
+        }
     }
 }

@@ -12,12 +12,13 @@ class MQTTClientWrapper
 public:
     MQTTClientWrapper();
 
-    void init(std::vector<Device> *devices);
+    void init(std::vector<Device> *newDevices);
     void reconnect();
-    void publishSerialData(char *serialData);
+    void publishSerialData(char *channel, char *serialData);
     void loop();
     void subscribe(char *channel);
-    static void callback(char *topic, byte *payload, unsigned int length);
+    std::vector<Device> &getDevices();
+    void callback(char *topic, byte *payload, unsigned int length);
 
 protected:
     char *mqttServer = (char *)"mqtt.castrumnubis.com";

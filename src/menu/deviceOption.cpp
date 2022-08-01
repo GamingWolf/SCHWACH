@@ -1,18 +1,18 @@
 #include "deviceOption.h"
 
-DeviceOption::DeviceOption(const char *newName, const char *newType, std::vector<String> newOptions)
+DeviceOption::DeviceOption(String newName, String newType, std::vector<String> newOptions)
 {
-    this->name = name;
-    this->type = type;
-    this->options = options;
+    name = newName;
+    type = newType;
+    options = newOptions;
 }
 
-const char *DeviceOption::getName()
+String DeviceOption::getName()
 {
     return name;
 }
 
-const char *DeviceOption::getType()
+String DeviceOption::getType()
 {
     return type;
 }
