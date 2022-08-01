@@ -11,6 +11,7 @@ public:
     Device(String name, std::vector<DeviceOption> options);
     void showOptions();
     String getName();
+    std::vector<DeviceOption> getOptions();
 
 private:
     std::vector<DeviceOption> deviceOptions;

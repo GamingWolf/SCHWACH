@@ -98,7 +98,7 @@ void setup()
   lcdDisplay->setFirstLine("    SCHWACH!");
   delay(200);
 
-  mainMenu.init(&lcdDisplay);
+  mainMenu.init(&lcdDisplay, &devices, &mqttClientWrapper);
   mainMenu.generateMenu();
 
   setupWifi();

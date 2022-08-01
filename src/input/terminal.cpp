@@ -31,7 +31,6 @@ void Terminal::read()
         case 'd':
             LogUtils::xprintf("Right");
             menu->increaseSelectedIndex();
-            menu->printMenu();
             break;
         case 's':
             LogUtils::xprintf("Down");
@@ -41,16 +40,30 @@ void Terminal::read()
         case 'a':
             LogUtils::xprintf("Left");
             menu->decreaseSelectedIndex();
-            menu->printMenu();
             break;
         case 'b':
         case 'h':
             LogUtils::xprintf("Home");
-            menu->printMenu();
+            switch (menu->getCurrentFlag())
+            {
+            case MAIN_MENU:
+            case DEVICE_MENU:
+            case SETTINGS_MENU:
+            case ABOUT_MENU:
+            case CONSOLE_MENU:
+                menu->printMenu();
+                break;
+            case DEVICE_OPTION_MENU:
+                menu->printDevices();
+                break;
+            case DEVICE_OPTION_CHOICE:
+                menu->printDeviceOptions();
+                break;
+            }
             break;
         case ' ':
             LogUtils::xprintf("Select");
-            // menu.printMenuItem(menu.getSelectedIndex());
+            menu->printSubMenu(menu->getSelectedIndex());
             break;
         default:
             LogUtils::xprintf(&c);

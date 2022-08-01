@@ -12,6 +12,11 @@ String Device::getName()
     return deviceName;
 }
 
+std::vector<DeviceOption> Device::getOptions()
+{
+    return deviceOptions;
+}
+
 void Device::showOptions()
 {
     LogUtils::xprintf("Device Name:");

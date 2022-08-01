@@ -4,10 +4,12 @@
 
 #include "mqttClientWrapper.h"
 
+#define MQTT_MAX_PACKET_SIZE 4096
+
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
 
-StaticJsonDocument<1024> jsonDoc;
+StaticJsonDocument<4096> jsonDoc;
 
 MQTTClientWrapper::MQTTClientWrapper()
 {
@@ -20,6 +22,8 @@ void MQTTClientWrapper::init(std::vector<Device> *newDevices)
     // client.setCallback(callback);
     client.setCallback([this](char *topic, byte *payload, unsigned int length)
                        { this->callback(topic, payload, length); });
+
+    client.setBufferSize(MQTT_MAX_PACKET_SIZE);
 }
 
 void MQTTClientWrapper::reconnect()
@@ -51,12 +55,12 @@ void MQTTClientWrapper::reconnect()
 
 void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length)
 {
-
     // Serial.println("-------new message from broker-----");
     // Serial.print("channel:");
     // Serial.println(topic);
     // Serial.print("data:");
     // Serial.write(payload, length);
+    // Serial.println(" ");
 
     String topicStr = String(topic);
     if (topicStr.startsWith("manifest/") && !topicStr.equals("manifest/broadcast"))
@@ -77,11 +81,25 @@ void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length
         // remove the first 8 characters from the string
         // This leaves just the name of the device
         topicStr.remove(0, 9);
+
+        Serial.println(topicStr);
+
+        // check all devices and exit if it exists arleady
+        for (int i = 0; i < devices->size(); i++)
+        {
+            if (topicStr.equals(devices->at(i).getName()))
+            {
+                return;
+            }
+        }
+
         std::vector<DeviceOption> deviceOptions;
         for (size_t i = 0; i < jsonDoc.size(); i++)
         {
 
             String name = jsonDoc[i]["name"].as<String>();
+            String topicName = jsonDoc[i]["topicName"].as<String>();
+            String description = jsonDoc[i]["description"].as<String>();
             String type = jsonDoc[i]["type"].as<String>();
 
             auto jsonOptions = jsonDoc[i]["options"];
@@ -92,10 +110,11 @@ void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length
                 options.push_back(newOption);
             }
 
-            DeviceOption option = DeviceOption(name, type, options);
+            DeviceOption option = DeviceOption(name, topicName, description, type, options);
             deviceOptions.push_back(option);
         }
         Device device = Device(topicStr, deviceOptions);
+        Serial.println(device.getName());
         devices->push_back(device);
     }
 }
@@ -120,5 +139,12 @@ void MQTTClientWrapper::subscribe(char *channel)
 
 void MQTTClientWrapper::loop()
 {
-    client.loop();
+    if (client.connected())
+    {
+        client.loop();
+    }
+    else
+    {
+        reconnect();
+    }
 }
