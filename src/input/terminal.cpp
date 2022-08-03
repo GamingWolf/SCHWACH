@@ -35,10 +35,18 @@ void Terminal::read()
             break;
         case 'h':
             LogUtils::xprintf("Home");
+            menu->setSelectedIndex(0);
+            menu->setSelectedDevice(0);
+            menu->setSelectedDeviceOption(0);
+            menu->setSelectedDeviceOptionChoice(0);
             menu->printMenu();
             break;
         case 'b':
             LogUtils::xprintf("Back");
+            menu->setSelectedIndex(0);
+            menu->setSelectedDevice(0);
+            menu->setSelectedDeviceOption(0);
+            menu->setSelectedDeviceOptionChoice(0);
             switch (menu->getCurrentFlag())
             {
             case MAIN_MENU:

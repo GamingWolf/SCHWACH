@@ -103,16 +103,19 @@ void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length
             String type = jsonDoc[i]["type"].as<String>();
 
             auto jsonOptions = jsonDoc[i]["options"];
-            std::vector<String> options;
+            std::vector<DeviceOptionChoice> options;
             for (int i = 0; i < jsonOptions.size(); i++)
             {
-                String newOption = jsonOptions[i].as<String>();
-                options.push_back(newOption);
+                String newOptionName = jsonOptions[i]["choiceName"].as<String>();
+                String newOptionValue = jsonOptions[i]["choiceValue"].as<String>();
+                auto newChoice = DeviceOptionChoice(newOptionName, newOptionValue);
+                options.push_back(newChoice);
             }
 
             if (jsonOptions.size() == 0)
             {
-                options.push_back("Listen");
+                auto newChoice = DeviceOptionChoice("Listen", "");
+                options.push_back(newChoice);
             }
 
             DeviceOption option = DeviceOption(name, topicName, description, type, options);

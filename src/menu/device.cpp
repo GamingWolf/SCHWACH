@@ -33,7 +33,7 @@ void Device::showOptions()
         {
             for (auto option : options)
             {
-                Serial.println(option);
+                Serial.println(option.getName());
             }
         }
         else

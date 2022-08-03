@@ -73,11 +73,19 @@ void Keyboard::read()
         case fabgl::VK_h:
         case fabgl::VK_H:
             LogUtils::xprintf("Home");
+            menu->setSelectedIndex(0);
+            menu->setSelectedDevice(0);
+            menu->setSelectedDeviceOption(0);
+            menu->setSelectedDeviceOptionChoice(0);
             menu->printMenu();
             break;
         case fabgl::VK_b:
         case fabgl::VK_B:
             LogUtils::xprintf("Back");
+            menu->setSelectedIndex(0);
+            menu->setSelectedDevice(0);
+            menu->setSelectedDeviceOption(0);
+            menu->setSelectedDeviceOptionChoice(0);
             switch (menu->getCurrentFlag())
             {
             case MAIN_MENU:

@@ -1,6 +1,6 @@
 #include "deviceOption.h"
 
-DeviceOption::DeviceOption(String newName, String newTopicName, String newDescription, String newType, std::vector<String> newOptions)
+DeviceOption::DeviceOption(String newName, String newTopicName, String newDescription, String newType, std::vector<DeviceOptionChoice> newOptions)
 {
     name = newName;
     topicName = newTopicName;
@@ -29,7 +29,7 @@ String DeviceOption::getTopicName()
     return topicName;
 }
 
-std::vector<String> DeviceOption::getOptions()
+std::vector<DeviceOptionChoice> DeviceOption::getOptions()
 {
     return options;
 }

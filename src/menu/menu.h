@@ -35,6 +35,7 @@ public:
     void increaseSelectedIndex();
     void decreaseSelectedIndex();
     void executeChoice();
+    void padTo(std::string &str, const size_t num, const char paddingChar = ' ');
 
     // getters
     Menu getMenu();
@@ -43,6 +44,12 @@ public:
     int getCurrentFlag();
     String getName();
     String getDescription();
+
+    // setters
+    void setSelectedIndex(int newIndex);
+    void setSelectedDevice(int newDeviceIndex);
+    void setSelectedDeviceOption(int newDeviceOptionIndex);
+    void setSelectedDeviceOptionChoice(int newDeviceOptionChoiceIndex);
 
     // deprecated
     void printMenuItem(int id);
