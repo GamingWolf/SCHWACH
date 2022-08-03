@@ -7,12 +7,12 @@
 
 #include "menu/menu.h"
 #include "display/lcdDisplay.h"
-#include "input/input.h"
+// #include "input/input.h"
 #include "mqtt/mqttClientWrapper.h"
 
 LcdDisplay *lcdDisplay;
 Menu mainMenu;
-Input input;
+// Input input;
 MQTTClientWrapper mqttClientWrapper;
 std::vector<Device> devices;
 
@@ -101,8 +101,8 @@ void setup()
   mainMenu.init(&lcdDisplay, &devices, &mqttClientWrapper);
   mainMenu.generateMenu();
 
-  input.init(&devices, &mqttClientWrapper);
-  input.setMenu(&mainMenu);
+  // input.init(&devices, &mqttClientWrapper);
+  // input.setMenu(&mainMenu);
 
   setupWifi();
 
@@ -125,7 +125,8 @@ void loop()
   }
 
   // Read keyboard inputs
-  input.read();
+  // input.read();
+  mainMenu.read();
 
   mqttClientWrapper.loop();
 }

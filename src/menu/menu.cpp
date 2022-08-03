@@ -486,3 +486,8 @@ void Menu::padTo(std::string &str, const size_t num, const char paddingChar)
     if (num > str.size())
         str.insert(str.size(), num - str.size(), paddingChar);
 }
+
+void Menu::read()
+{
+    mInput.read();
+}

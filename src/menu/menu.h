@@ -26,6 +26,7 @@ public:
               std::vector<Device> *newDevices,
               MQTTClientWrapper *newMqttClientWrapper);
 
+    void read();
     void generateMenu();
     void printMenu();
     void printSubMenu(int index);
