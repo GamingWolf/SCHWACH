@@ -124,14 +124,14 @@ void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length
     }
     else
     {
-        LogUtils::xprintf("-------new message from broker-----");
-        Serial.print("channel:");
-        LogUtils::xprintf(topic);
-        Serial.print("data:");
-        Serial.write(payload, length);
-        LogUtils::xprintf(" ");
+        // LogUtils::xprintf("-------new message from broker-----");
+        // Serial.print("channel:");
+        // LogUtils::xprintf(topic);
+        // Serial.print("data:");
+        // Serial.write(payload, length);
+        // LogUtils::xprintf(" ");
         lastMessage = jsonDoc["data"].as<String>();
-        LogUtils::xprintf("%s", lastMessage);
+        // LogUtils::xprintf("%s", lastMessage);
     }
 }
 

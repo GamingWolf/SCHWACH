@@ -476,7 +476,7 @@ void Menu::executeChoice()
             }
             mqttClientWrapper->loop();
             mInput.read();
-            delay(500);
+            // delay(500);
         }
     }
 }
