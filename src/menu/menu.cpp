@@ -54,9 +54,15 @@ void Menu::generateMenu()
 
 void Menu::increaseSelectedIndex()
 {
-    auto currentDevice = devices->at(selectedDevice);
-    auto currentOptions = currentDevice.getOptions();
-    auto currentOptionChoices = currentOptions.at(selectedDeviceOption).getOptions();
+    Device currentDevice = Device("", {});
+    std::vector<DeviceOption> currentOptions = {};
+    std::vector<String> currentOptionChoices = {};
+    if (devices->size() > 0)
+    {
+        currentDevice = devices->at(selectedDevice);
+        currentOptions = currentDevice.getOptions();
+        currentOptionChoices = currentOptions.at(selectedDeviceOption).getOptions();
+    }
     switch (currentFlag)
     {
     case DEVICE_MENU:
@@ -74,6 +80,7 @@ void Menu::increaseSelectedIndex()
         }
         break;
     case DEVICE_OPTION_CHOICE:
+
         if (selectedDeviceOptionChoice < currentOptionChoices.size() - 1)
         {
             selectedDeviceOptionChoice++;

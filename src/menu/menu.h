@@ -52,7 +52,7 @@ protected:
     bool inDeviceList = false;
     bool inDevice = false;
     bool inOptionChoice = false;
-    int currentFlag;
+    int currentFlag = MAIN_MENU;
     String name;
     String description;
     int selectedIndex = 0;
