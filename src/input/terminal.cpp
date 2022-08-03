@@ -41,9 +41,12 @@ void Terminal::read()
             LogUtils::xprintf("Left");
             menu->decreaseSelectedIndex();
             break;
-        case 'b':
         case 'h':
             LogUtils::xprintf("Home");
+            menu->printMenu();
+            break;
+        case 'b':
+            LogUtils::xprintf("Back");
             switch (menu->getCurrentFlag())
             {
             case MAIN_MENU:

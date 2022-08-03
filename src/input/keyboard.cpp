@@ -72,50 +72,61 @@ void Keyboard::read()
         case fabgl::VK_ESCAPE:
         case fabgl::VK_h:
         case fabgl::VK_H:
+            LogUtils::xprintf("Home");
             menu->printMenu();
             break;
         case fabgl::VK_b:
         case fabgl::VK_B:
-
+            LogUtils::xprintf("Back");
+            switch (menu->getCurrentFlag())
+            {
+            case MAIN_MENU:
+            case DEVICE_MENU:
+            case SETTINGS_MENU:
+            case ABOUT_MENU:
+            case CONSOLE_MENU:
+                menu->printMenu();
+                break;
+            case DEVICE_OPTION_MENU:
+                menu->printDevices();
+                break;
+            case DEVICE_OPTION_CHOICE:
+                menu->printDeviceOptions();
+                break;
+            }
             break;
         case fabgl::VK_d:
         case fabgl::VK_D:
         case fabgl::VK_RIGHT:
+            LogUtils::xprintf("Right");
             menu->increaseSelectedIndex();
-            menu->printMenu();
             break;
         case fabgl::VK_a:
         case fabgl::VK_A:
         case fabgl::VK_LEFT:
+            LogUtils::xprintf("Left");
             menu->decreaseSelectedIndex();
-            menu->printMenu();
-            break;
-        case fabgl::VK_s:
-        case fabgl::VK_S:
-        case fabgl::VK_DOWN:
-            break;
-        case fabgl::VK_w:
-        case fabgl::VK_W:
-        case fabgl::VK_UP:
             break;
         case fabgl::VK_SPACE:
         case fabgl::VK_RETURN:
+            LogUtils::xprintf("Select");
+            menu->printSubMenu(menu->getSelectedIndex());
             break;
         default:
             break;
         }
-        if (keyboard.getNextVirtualKey(&item))
-        {
-            LogUtils::xprintf("%s: ", keyboard.virtualKeyToString(item.vk));
-            LogUtils::xprintf("\tASCII = 0x%02X\t", item.ASCII);
-            if (item.ASCII >= ' ')
-                LogUtils::xprintf("'%c'", item.ASCII);
-            LogUtils::xprintf("\t%s", item.down ? "DN" : "UP");
-            LogUtils::xprintf("\t[");
-            for (int i = 0; i < 8 && item.scancode[i] != 0; ++i)
-                LogUtils::xprintf("%02X ", item.scancode[i]);
-            LogUtils::xprintf("]");
-            LogUtils::xprintf("\r\n");
-        }
+        // if (keyboard.getNextVirtualKey(&item))
+        // {
+        //     LogUtils::xprintf("%s: ", keyboard.virtualKeyToString(item.vk));
+        //     LogUtils::xprintf("\tASCII = 0x%02X\t", item.ASCII);
+        //     if (item.ASCII >= ' ')
+        //         LogUtils::xprintf("'%c'", item.ASCII);
+        //     LogUtils::xprintf("\t%s", item.down ? "DN" : "UP");
+        //     LogUtils::xprintf("\t[");
+        //     for (int i = 0; i < 8 && item.scancode[i] != 0; ++i)
+        //         LogUtils::xprintf("%02X ", item.scancode[i]);
+        //     LogUtils::xprintf("]");
+        //     LogUtils::xprintf("\r\n");
+        // }
     }
 }
