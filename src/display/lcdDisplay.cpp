@@ -2,6 +2,8 @@
 
 #include <LiquidCrystal_I2C.h>
 
+// WHITE == SCL == PIN22
+// BLACK == SDA == PIN21
 LcdDisplay::LcdDisplay() : lcd(0x27, 16, 2)
 {
     lcd.init();
