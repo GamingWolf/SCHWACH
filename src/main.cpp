@@ -101,12 +101,12 @@ void setup()
   mainMenu.init(&lcdDisplay, &devices, &mqttClientWrapper);
   mainMenu.generateMenu();
 
+  input.init(&devices, &mqttClientWrapper);
+  input.setMenu(&mainMenu);
+
   setupWifi();
 
   setupMQTT();
-
-  input.init(&devices, &mqttClientWrapper);
-  input.setMenu(&mainMenu);
 
   mainMenu.printMenu();
 }

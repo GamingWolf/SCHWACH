@@ -72,6 +72,7 @@ void Keyboard::read()
         case fabgl::VK_ESCAPE:
         case fabgl::VK_h:
         case fabgl::VK_H:
+        case fabgl::VK_HOME:
             LogUtils::xprintf("Home");
             menu->setSelectedIndex(0);
             menu->setSelectedDevice(0);
@@ -123,6 +124,9 @@ void Keyboard::read()
         default:
             break;
         }
+
+        // clear duplicate entry
+        keyboard.getNextVirtualKey(&item);
         // if (keyboard.getNextVirtualKey(&item))
         // {
         //     LogUtils::xprintf("%s: ", keyboard.virtualKeyToString(item.vk));

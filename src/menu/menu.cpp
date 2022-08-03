@@ -1,4 +1,7 @@
 #include "menu.h"
+#include "../input/input.h"
+
+Input mInput;
 
 Menu::Menu(int intId, String strName, String strDescription)
 {
@@ -7,11 +10,16 @@ Menu::Menu(int intId, String strName, String strDescription)
     description = strDescription;
 }
 
-void Menu::init(LcdDisplay **newDisplay, std::vector<Device> *newDevices, MQTTClientWrapper *newMqttClientWrapper)
+void Menu::init(LcdDisplay **newDisplay,
+                std::vector<Device> *newDevices,
+                MQTTClientWrapper *newMqttClientWrapper)
 {
     lcdDisplay = *newDisplay;
     devices = newDevices;
     mqttClientWrapper = newMqttClientWrapper;
+
+    mInput.init(devices, mqttClientWrapper);
+    mInput.setMenu(this);
 }
 
 Menu Menu::getMenu()
@@ -164,7 +172,13 @@ void Menu::decreaseSelectedIndex()
 
 void Menu::printMenu()
 {
-    Serial.println("Printing menu");
+    LogUtils::xprintf("Printing menu");
+    if (currentSubscription)
+    {
+        mqttClientWrapper->unsubscribe(currentSubscription);
+        currentSubscription = nullptr;
+    }
+    LogUtils::xprintf("selectedIndex: %s", String(currentFlag));
     inDeviceList = false;
     inDevice = false;
     inOptionChoice = false;
@@ -202,6 +216,11 @@ void Menu::printMenu()
 void Menu::printDevices()
 {
     Serial.println("Printing devices");
+    if (currentSubscription)
+    {
+        mqttClientWrapper->unsubscribe(currentSubscription);
+        currentSubscription = nullptr;
+    }
     String firstMenuLine, secondMenuLine = "";
     inDeviceList = true;
     inDevice = false;
@@ -246,6 +265,11 @@ void Menu::printDevices()
 void Menu::printDeviceOptions()
 {
     Serial.println("Printing device options");
+    if (currentSubscription)
+    {
+        mqttClientWrapper->unsubscribe(currentSubscription);
+        currentSubscription = nullptr;
+    }
     String firstMenuLine, secondMenuLine = "";
     auto deviceOptions = devices->at(selectedDevice).getOptions();
     Serial.println(deviceOptions.size());
@@ -292,6 +316,11 @@ void Menu::printDeviceOptions()
 void Menu::printDeviceOptionsSelection()
 {
     Serial.println("Printing device option selection");
+    if (currentSubscription)
+    {
+        mqttClientWrapper->unsubscribe(currentSubscription);
+        currentSubscription = nullptr;
+    }
     String firstMenuLine, secondMenuLine = "";
     auto deviceOptions = devices->at(selectedDevice).getOptions();
     auto deviceOptionChoices = deviceOptions.at(selectedDeviceOption).getOptions();
@@ -355,9 +384,7 @@ void Menu::printSubMenu(int index)
         break;
     case SETTINGS_MENU:
         lcdDisplay->setFirstLine("Settings");
-        lcdDisplay->setSecondLine("Coming soon");
-        delay(1500);
-        printMenu();
+        lcdDisplay->setSecondLine("Nothing here");
         currentFlag = SETTINGS_MENU;
         break;
 
@@ -414,8 +441,8 @@ void Menu::executeChoice()
     auto choiceValue = deviceOptionChoices.at(selectedDeviceOptionChoice).getValue();
     auto choiceName = deviceOptionChoices.at(selectedDeviceOptionChoice).getName();
     auto choice = "{\"data\":\"" + choiceValue + "\"}";
-    char *cChoice = new char[choice.length() + 1];
-    strcpy(cChoice, choice.c_str());
+    char *cChoice = new char[choiceValue.length() + 1];
+    strcpy(cChoice, choiceValue.c_str());
 
     if (optionType.equals("publish"))
     {
@@ -429,10 +456,28 @@ void Menu::executeChoice()
     else if (optionType.equals("subscribe"))
     {
         mqttClientWrapper->subscribe(cTopic);
+        currentSubscription = cTopic;
         lcdDisplay->setFirstLine("Subscribed to: ");
         lcdDisplay->setSecondLine(cTopic);
         delay(1500);
-        printDeviceOptions();
+        lcdDisplay->setFirstLine(topic + ": ");
+        String value, lastValue;
+        LogUtils::xprintf("selectedIndex: %s", String(currentFlag));
+        while (currentFlag == DEVICE_OPTION_CHOICE)
+        {
+            value = mqttClientWrapper->getMessage();
+            if (value)
+            {
+                if (!lastValue.equals(value))
+                {
+                    lcdDisplay->setSecondLine(String(value));
+                    lastValue = value;
+                }
+            }
+            mqttClientWrapper->loop();
+            mInput.read();
+            delay(500);
+        }
     }
 }
 

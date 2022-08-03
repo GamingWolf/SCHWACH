@@ -26,6 +26,11 @@ void MQTTClientWrapper::init(std::vector<Device> *newDevices)
     client.setBufferSize(MQTT_MAX_PACKET_SIZE);
 }
 
+String MQTTClientWrapper::getMessage()
+{
+    return lastMessage;
+}
+
 void MQTTClientWrapper::reconnect()
 {
     // Loop until we're reconnected
@@ -38,7 +43,7 @@ void MQTTClientWrapper::reconnect()
         // Attempt to connect
         if (client.connect(clientId.c_str()))
         {
-            Serial.println("Connected");
+            LogUtils::xprintf("Connected");
             // Once connected, publish an announcement...
             client.publish(publishChannel, "testing...");
         }
@@ -46,7 +51,7 @@ void MQTTClientWrapper::reconnect()
         {
             Serial.print("failed, rc=");
             Serial.print(client.state());
-            Serial.println(" try again in 5 seconds");
+            LogUtils::xprintf(" try again in 5 seconds");
             // Wait 5 seconds before retrying
             delay(5000);
         }
@@ -55,34 +60,26 @@ void MQTTClientWrapper::reconnect()
 
 void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length)
 {
-    // Serial.println("-------new message from broker-----");
-    // Serial.print("channel:");
-    // Serial.println(topic);
-    // Serial.print("data:");
-    // Serial.write(payload, length);
-    // Serial.println(" ");
+
+    // as byte and char have the same length, we can just
+    // lie to the compiler and use char
+    payload[length] = '\0';
+    String s = String((char *)payload);
+
+    DeserializationError error = deserializeJson(jsonDoc, s);
+    if (error)
+    {
+        LogUtils::xprintf("deserializeJson() failed");
+        LogUtils::xprintf(error.c_str());
+        return;
+    }
 
     String topicStr = String(topic);
     if (topicStr.startsWith("manifest/") && !topicStr.equals("manifest/broadcast"))
     {
-        // as byte and char have the same length, we can just
-        // lie to the compiler and use char
-        payload[length] = '\0';
-        String s = String((char *)payload);
-
-        DeserializationError error = deserializeJson(jsonDoc, s);
-        if (error)
-        {
-            Serial.println("deserializeJson() failed");
-            Serial.println(error.c_str());
-            return;
-        }
-
         // remove the first 8 characters from the string
         // This leaves just the name of the device
         topicStr.remove(0, 9);
-
-        Serial.println(topicStr);
 
         // check all devices and exit if it exists arleady
         for (int i = 0; i < devices->size(); i++)
@@ -122,8 +119,19 @@ void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length
             deviceOptions.push_back(option);
         }
         Device device = Device(topicStr, deviceOptions);
-        Serial.println(device.getName());
+        LogUtils::xprintf("New device found: %s", device.getName().c_str());
         devices->push_back(device);
+    }
+    else
+    {
+        LogUtils::xprintf("-------new message from broker-----");
+        Serial.print("channel:");
+        LogUtils::xprintf(topic);
+        Serial.print("data:");
+        Serial.write(payload, length);
+        LogUtils::xprintf(" ");
+        lastMessage = jsonDoc["data"].as<String>();
+        LogUtils::xprintf("%s", lastMessage);
     }
 }
 
@@ -143,6 +151,16 @@ void MQTTClientWrapper::subscribe(char *channel)
         reconnect();
     }
     client.subscribe(channel);
+}
+
+void MQTTClientWrapper::unsubscribe(char *channel)
+{
+    if (!client.connected())
+    {
+        reconnect();
+    }
+    client.unsubscribe(channel);
+    lastMessage = "";
 }
 
 void MQTTClientWrapper::loop()

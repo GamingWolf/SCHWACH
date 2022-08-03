@@ -22,7 +22,9 @@ class Menu
 public:
     Menu(int intId = 0, String strName = "", String strDescription = "");
 
-    void init(LcdDisplay **newDisplay, std::vector<Device> *newDevices, MQTTClientWrapper *newMqttClientWrapper);
+    void init(LcdDisplay **newDisplay,
+              std::vector<Device> *newDevices,
+              MQTTClientWrapper *newMqttClientWrapper);
 
     void generateMenu();
     void printMenu();
@@ -62,6 +64,7 @@ protected:
     int currentFlag = MAIN_MENU;
     String name;
     String description;
+    char *currentSubscription;
     int selectedIndex = 0;
     int selectedDevice = 0;
     int selectedDeviceOption = 0;

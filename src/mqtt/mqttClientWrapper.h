@@ -6,6 +6,7 @@
 #include <PubSubClient.h>
 
 #include "../menu/device.h"
+#include "../utils/logUtils.h"
 
 class MQTTClientWrapper
 {
@@ -17,13 +18,18 @@ public:
     void publishSerialData(char *channel, char *serialData);
     void loop();
     void subscribe(char *channel);
+    void unsubscribe(char *channel);
     std::vector<Device> &getDevices();
     void callback(char *topic, byte *payload, unsigned int length);
+
+    // getters
+    String getMessage();
 
 protected:
     char *mqttServer = (char *)"mqtt.castrumnubis.com";
     int mqttPort = 1883;
     char *publishChannel = (char *)"SCHWACH/log";
+    String lastMessage;
     std::vector<Device> *devices;
 };
 
