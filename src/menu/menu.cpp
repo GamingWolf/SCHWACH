@@ -47,9 +47,9 @@ int Menu::getCurrentFlag()
 void Menu::generateMenu()
 {
     subMenus.push_back(new Menu(0, "Devices", "List of Devices"));
-    subMenus.push_back(new Menu(1, "Settings"));
-    subMenus.push_back(new Menu(2, "About"));
-    subMenus.push_back(new Menu(3, "Console"));
+    subMenus.push_back(new Menu(1, "Settings", "SCHWACH Config"));
+    subMenus.push_back(new Menu(2, "About", "About SCHWACH"));
+    subMenus.push_back(new Menu(3, "Console", "Coming in V2"));
 }
 
 void Menu::increaseSelectedIndex()
@@ -390,5 +390,10 @@ void Menu::executeChoice()
     }
     else if (optionType.equals("subscribe"))
     {
+        mqttClientWrapper->subscribe(cTopic);
+        lcdDisplay->setFirstLine("Subscribed to: ");
+        lcdDisplay->setSecondLine(cTopic);
+        delay(1500);
+        printDeviceOptions();
     }
 }

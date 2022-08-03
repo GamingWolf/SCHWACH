@@ -110,6 +110,11 @@ void MQTTClientWrapper::callback(char *topic, byte *payload, unsigned int length
                 options.push_back(newOption);
             }
 
+            if (jsonOptions.size() == 0)
+            {
+                options.push_back("Listen");
+            }
+
             DeviceOption option = DeviceOption(name, topicName, description, type, options);
             deviceOptions.push_back(option);
         }

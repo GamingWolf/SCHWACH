@@ -25,17 +25,9 @@ void Terminal::read()
         char c = Serial.read();
         switch (c)
         {
-        case 'w':
-            LogUtils::xprintf("Up");
-            break;
         case 'd':
             LogUtils::xprintf("Right");
             menu->increaseSelectedIndex();
-            break;
-        case 's':
-            LogUtils::xprintf("Down");
-            LogUtils::xprintf("%d", devices->at(0).getName());
-            devices->at(0).showOptions();
             break;
         case 'a':
             LogUtils::xprintf("Left");
